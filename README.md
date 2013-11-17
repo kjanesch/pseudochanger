@@ -8,11 +8,12 @@ The Panasonic variant uses different ping and ACK codes, sends some data at diff
 
 This project was developed specifically for the 2002 Subaru WRX head unit, model CQ-EF7260A, and should work with other Panasonic head units that have the same 16-pin connector on the back, as also found in some Mazdas and Hondas.
 
-This project contains several different packages:
- - Arduino library
+This project implements several different levels of functionality:
+ - Arduino MBus library
    - An interrupt-driven approach to receiving and sending data on the MBus
  - A simple changer emulator
-   - Does not support any controls and only displays a static timecode 
+   - Does not support any controls and only displays a static timecode (disc 1, time A:0A)
    - Essentially plug-and-play, aside from a little circuitry
  - An advanced changer emulator
    - Supports playback controls and an autodetect interface for iPods
+     - Uses the Teensy branch of [finsprings/arduinaap](https://github.com/finsprings/arduinaap/tree/teensy) for the iPod Accessory Protocol interface.
