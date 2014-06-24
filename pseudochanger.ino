@@ -2,12 +2,14 @@
 #include "./MBus.h"
 #include "./defines.h"
 
+//#define IPOD_SERIAL_DEBUG
+#define DEBUG_MODE
+//#define DISABLE_RELAY
+
 //playback state definitions
 #define IPOD_ACTIVE 1
 #define AUX_ACTIVE  2
 #define MBUS_DELAY 7
-
-//#define DISABLE_RELAY
 
 byte activeInput;
 
@@ -15,8 +17,8 @@ boolean ipodAvailable = false;
 
 MBus mBus(mBusIn, mBusOut);
 
-HardwareSerial uart = HardwareSerial();
-AdvancedRemote ipod;
+//HardwareSerial uart = HardwareSerial();
+AdvancedRemote ipod = AdvancedRemote(Serial1);
 
 byte playbackStatus = STOPPED;
 boolean updateDisplay = false;
@@ -69,26 +71,26 @@ void repeatModeHandler(AdvancedRemote::RepeatMode mode){
   }
 }
 
-void playlistPositionHandler(unsigned long pos){
-  trackindex = pos;
+void playlistPositionHandler(unsigned long playlistPosition){
+  trackindex = playlistPosition;
 }
 
 void currentPlaylistSongCountHandler(unsigned long count){
   plistcount = count;
 }
 
-void pollingHandler(AdvancedRemote::PollingCommand cmd, unsigned long val){
-  switch(cmd){
+void pollingHandler(AdvancedRemote::PollingCommand command, unsigned long playlistPositionOrelapsedTimeMs){
+  switch(command){
   // track change. 'val' is the playlist position
   case AdvancedRemote::POLLING_TRACK_CHANGE: 
-    trackindex = val;
+    trackindex = playlistPositionOrelapsedTimeMs;
     Serial.print("Track changed to index ");
-    Serial.println(val, DEC);
+    Serial.println(playlistPositionOrelapsedTimeMs, DEC);
     break;
 
   // elapsed time. 'val' is song playback time in ms
   case AdvancedRemote::POLLING_ELAPSED_TIME:
-    playtime = val/1000;
+    playtime = playlistPositionOrelapsedTimeMs/1000;
     Serial.print("track elapsed time is ");
     Serial.println(playtime, DEC);
     break;
@@ -97,12 +99,19 @@ void pollingHandler(AdvancedRemote::PollingCommand cmd, unsigned long val){
     break;
   }
 }
+#ifdef DEBUG_MODE
+void iPodNameHandler(const char *ipodName){
+    Serial.print("\tiPod name\t"); Serial.println(ipodName);  
+}
+#endif
+
 
 void setup(){
   ioinit();
   Serial.begin(9600); //12 Mbps, regardless of speed
-  uart.begin(iPodSerial::IPOD_SERIAL_RATE);
-  ipod.setSerial(uart);
+  //uart.begin(iPodSerial::IPOD_SERIAL_RATE);
+  //ipod.setSerial(uart);
+  //ipod.set
   
   //ipod.setFeedbackHandler(feedbackHandler);
   ipod.setShuffleModeHandler(shuffleModeHandler);
@@ -110,7 +119,15 @@ void setup(){
   ipod.setPollingHandler(pollingHandler);
   ipod.setPlaylistPositionHandler(playlistPositionHandler);
   ipod.setCurrentPlaylistSongCountHandler(currentPlaylistSongCountHandler);
-  
+#ifdef DEBUG_MODE
+  //ipod.setDebugPrint();
+  ipod.setiPodNameHandler(iPodNameHandler);
+#endif
+#ifdef IPOD_SERIAL_DEBUG
+  setDebugPrint(Serial);
+  setLogPrint(Serial);
+#endif
+  ipod.setup();
   ipod.enable();
 }
 
@@ -131,11 +148,35 @@ void loop(){
     nextUpdate=millis()+500;
   }
   
+#ifdef DEBUG_MODE
+  else if(nextUpdate<millis()){
+    Serial.print("\nDEBUG\n\tplayback status\t"); Serial.println(playbackStatus, BIN);
+    Serial.print("\tinput\t"); 
+    if(activeInput==IPOD_ACTIVE) Serial.println("iPod");
+    else Serial.println("aux");
+    Serial.print("\tipodAvailable\t"); Serial.println(ipodAvailable, BIN);
+    
+    Serial.print("\tplistindex\t"); Serial.println(plistindex);
+    Serial.print("\ttrackindex\t"); Serial.println(trackindex);
+    Serial.print("\tplaytime\t"); Serial.println(playtime);
+    Serial.print("\tplistcount\t"); Serial.println(plistcount);
+    Serial.print("\ttrackcount\t"); Serial.println(trackcount);
+
+    if(ipodAvailable || activeInput==IPOD_ACTIVE){
+       ipod.getiPodName(); //sent to iPodNameHandler
+      Serial.print("\trequesting iPod state\t"); ipod.getTimeAndStatusInfo(); //sent to PlaylistPositionHandler
+      
+    }
+
+    nextUpdate=millis()+2000;
+  }
+#endif
+
   if(mBus.receive(&mbusMsg)){
     
     if(mbusMsg == 0x68){
       if(millis()-prevPing<1500){
-        Serial.print("INFO: pings too fast, pausing.");
+        Serial.println("INFO: pings too fast, pausing.");
         playbackStatus = playbackStatus & (~PBSTATUS_MASK);
         playbackStatus |= PAUSED;
       }
