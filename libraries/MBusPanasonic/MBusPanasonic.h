@@ -8,6 +8,8 @@
 #ifndef _MBUSPANASONIC_H
 #define _MBUSPANASONIC_H
 
+#include "Arduino.h"
+
 #define STOPPED 0x00
 #define PLAYING 0x01
 #define PAUSED  0x02
