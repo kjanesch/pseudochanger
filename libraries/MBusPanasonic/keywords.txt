@@ -1,0 +1,64 @@
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+MBus	                KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+send	                KEYWORD2
+receive	                KEYWORD2
+sendPlayingTrack	KEYWORD2
+sendChangedCD	        KEYWORD2
+sendCDStatus	        KEYWORD2
+
+#######################################
+# Instances (KEYWORD3)
+#######################################
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+CMD_OFF                 LITERAL1
+MBUS_WAIT               LITERAL1
+
+CHANGER_STATE           LITERAL1
+CHGRST_ERR_HITEMP       LITERAL1
+CHGRST_MALF_PLAYER      LITERAL1
+
+MBUS_PBMODE_MASK        LITERAL1
+MBUS_PBMODE             LITERAL1
+MBUS_PBMODE_REPEAT_MSK  LITERAL1
+MBUS_PBMODE_REPEAT_ONE  LITERAL1
+MBUS_PBMODE_REPEAT_ALL  LITERAL1
+MBUS_PBMODE_SCAN        LITERAL1
+MBUS_PBMODE_RANDOM      LITERAL1
+
+PLAYBACK_STMASK         LITERAL1
+PLAYBACK_STATUS         LITERAL1
+PBSTATUS_REWIND         LITERAL1
+PBSTATUS_FFWD           LITERAL1
+PBSTATUS_SPINUP         LITERAL1
+PBSTATUS_PLAYING        LITERAL1
+PBSTATUS_PAUSED         LITERAL1
+PBSTATUS_STOPPED        LITERAL1
+PBSTATUS_REPEAT_ONE     LITERAL1
+PBSTATUS_REPEAT_ALL     LITERAL1
+PBSTATUS_SCAN           LITERAL1
+PBSTATUS_SHUFFLE        LITERAL1
+
+MBUS_SELCMD             LITERAL1
+MBUS_SELCMD_MASK        LITERAL1
+MBUS_SELCMD_DISCMASK    LITERAL1
+MBUS_SELCMD_TRACKMASK   LITERAL1
+MBUS_SELCMD_PAUSEMASK   LITERAL1
+
+MBUS_CMD                LITERAL1
+MBUS_CMD_MASK           LITERAL1
+MBUS_CMD_PAUSE          LITERAL1
+MBUS_CMD_PLAY           LITERAL1
+MBUS_CMD_FFWD           LITERAL1
+MBUS_CMD_RWD            LITERAL1

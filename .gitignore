@@ -1,3 +1,10 @@
+# OSX Temp Files
+._*
+
+# EAGLE CAD previous file revisions
+*.b#*
+*.s#*
+
 # Object files
 *.o
 
